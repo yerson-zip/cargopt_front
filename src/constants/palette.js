@@ -11,7 +11,7 @@ export const COLORS = {
   border:      "#1e2436",
   borderHover: "#2a2d3a",
   accent:      "#4a9eff",
-  success:     "#2ecc71",
+  success:     "#3adf7f",
   danger:      "#e74c3c",
   textPrimary: "#e0e6f0",
   textMuted:   "#8a9ab5",

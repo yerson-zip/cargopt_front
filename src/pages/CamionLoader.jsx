@@ -9,7 +9,7 @@ import Sidebar        from "../components/Sidebar";
 
 export default function CamionLoader() {
   const [cajaHover, setCajaHover] = useState(null);
-  const { camion, cajas, carga, loading, error } = useCargaData(1, 1);
+  const { camion, cajas, carga, loading, error } = useCargaData(2, 2);
 
   if (loading) return <LoadingScreen />;
   if (error)   return <ErrorScreen message={error} />;
