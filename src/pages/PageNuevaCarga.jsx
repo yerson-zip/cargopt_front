@@ -5,59 +5,60 @@ import DashInp     from "../components/dashboard/DashInp";
 import { useOptimizacion } from "../hooks/useCargaData";
 import { hashColor } from "../utils/colorUtils";
 
-const EF = { nombre: "", largo: "", alto: "", ancho: "", peso: "", fragil: false };
+const EF = { nombre: "", largo: "", alto: "", ancho: "", peso: "", cantidad: 1 };
 const empty = (v) => !v || String(v).trim() === "";
 
 export default function PageNuevaCarga({ camiones }) {
   const navigate = useNavigate();
-  const [step, setStep]       = useState(1);
+  const [step, setStep]         = useState(1);
   const [camionId, setCamionId] = useState("");
-  const [cajas, setCajas]     = useState([]);
-  const [fc, setFc]           = useState(EF);
-  const [formErr, setFormErr] = useState("");
+  const [cajas, setCajas]       = useState([]);
+  const [fc, setFc]             = useState(EF);
+  const [formErr, setFormErr]   = useState("");
   const { optimizar, loading, resultado, error: apiErr } = useOptimizacion();
   const camSel = camiones.find((c) => String(c.id) === String(camionId));
 
   function addCaja() {
     if ([fc.nombre,fc.largo,fc.alto,fc.ancho,fc.peso].some(empty)) { setFormErr("Todos los campos son requeridos"); return; }
     if ([fc.largo,fc.alto,fc.ancho,fc.peso].some((v) => isNaN(+v)||+v<=0)) { setFormErr("Medidas y peso deben ser números positivos"); return; }
+    if (isNaN(+fc.cantidad)||+fc.cantidad<1) { setFormErr("La cantidad debe ser al menos 1"); return; }
     setFormErr("");
-    setCajas((p) => [...p, { id:`C${String(p.length+1).padStart(3,"0")}`, nombre:fc.nombre,
-      largo:+fc.largo, alto:+fc.alto, ancho:+fc.ancho, peso:+fc.peso, fragil:fc.fragil,
-      color: hashColor(fc.nombre) }]);
+    setCajas((p) => [...p, {
+      id: `C${String(p.length+1).padStart(3,"0")}`,
+      nombre:   fc.nombre,
+      largo:    +fc.largo,
+      alto:     +fc.alto,
+      ancho:    +fc.ancho,
+      peso:     +fc.peso,
+      cantidad: +fc.cantidad,
+      color:    hashColor(fc.nombre),
+    }]);
     setFc(EF);
   }
 
   async function handleOptimizar() {
-
-  try {
-
-    const payload = {
-      nombre: `Carga ${new Date().toLocaleString()}`,
-      descripcion: "Carga generada desde frontend",
-      camion_id:  Number(camSel.id),
-
-      items: cajas.map((c) => ({
-        nombre: c.nombre,
-        largo: c.largo,
-        alto: c.alto,
-        ancho: c.ancho,
-        peso: c.peso,
-        cantidad: 1
-      }))
-    };
-
-    const data = await optimizar(payload);
-
-    if (data?.carga_id && data?.camion_id) {
-      navigate(`/optimizer/${data.camion_id}/${data.carga_id}`);
-    } else {
-      setStep(3);
-    }
-
-  } catch (_) {}
-
-}
+    try {
+      const payload = {
+        nombre:      `Carga ${new Date().toLocaleString()}`,
+        descripcion: "Carga generada desde frontend",
+        camion_id:   Number(camSel.id),
+        items: cajas.map((c) => ({
+          nombre:   c.nombre,
+          largo:    c.largo,
+          alto:     c.alto,
+          ancho:    c.ancho,
+          peso:     c.peso,
+          cantidad: c.cantidad,
+        })),
+      };
+      const data = await optimizar(payload);
+      if (data?.carga_id && data?.camion_id) {
+        navigate(`/optimizer/${data.camion_id}/${data.carga_id}`);
+      } else {
+        setStep(3);
+      }
+    } catch (_) {}
+  }
 
   /* STEP 1 */
   if (step === 1) return (
@@ -112,19 +113,9 @@ export default function PageNuevaCarga({ camiones }) {
               <DashInp label="Alto"  value={fc.alto}  onChange={(v)=>setFc((p)=>({...p,alto:v}))}  type="number" placeholder="0.0" unit="m"/>
               <DashInp label="Ancho" value={fc.ancho} onChange={(v)=>setFc((p)=>({...p,ancho:v}))} type="number" placeholder="0.0" unit="m"/>
             </div>
-            <DashInp label="Peso" value={fc.peso} onChange={(v)=>setFc((p)=>({...p,peso:v}))} type="number" placeholder="0" unit="kg"/>
-            <div onClick={()=>setFc((p)=>({...p,fragil:!p.fragil}))}
-              style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",borderRadius:8,cursor:"pointer",transition:"all 0.2s",
-                border:`1px solid ${fc.fragil?"#f59e0b44":"var(--border2)"}`,background:fc.fragil?"#1a150022":"transparent"}}>
-              <div style={{width:18,height:18,borderRadius:4,flexShrink:0,transition:"all 0.2s",
-                border:`2px solid ${fc.fragil?"#f59e0b":"var(--muted)"}`,background:fc.fragil?"#f59e0b":"transparent",
-                display:"flex",alignItems:"center",justifyContent:"center"}}>
-                {fc.fragil&&<span style={{fontSize:10,color:"#000"}}>✓</span>}
-              </div>
-              <div>
-                <div style={{fontSize:11,color:fc.fragil?"#f59e0b":"var(--muted2)"}}>⚠ Caja frágil</div>
-                <div style={{fontSize:9,color:"var(--muted)",marginTop:1}}>Se priorizará en la parte superior</div>
-              </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <DashInp label="Peso"     value={fc.peso}     onChange={(v)=>setFc((p)=>({...p,peso:v}))}     type="number" placeholder="0"   unit="kg"/>
+              <DashInp label="Cantidad" value={fc.cantidad} onChange={(v)=>setFc((p)=>({...p,cantidad:v}))} type="number" placeholder="1"   unit="uds"/>
             </div>
             {formErr&&<div style={{fontSize:10,color:"#e74c3c",padding:"8px 12px",background:"#2a080822",borderRadius:6,border:"1px solid #e74c3c44"}}>{formErr}</div>}
             <button className="btn bp" style={{alignSelf:"flex-start"}} onClick={addCaja}>+ Agregar caja</button>
@@ -147,11 +138,8 @@ export default function PageNuevaCarga({ camiones }) {
                   borderBottom:i<cajas.length-1?"1px solid var(--border)":"none"}}>
                   <div style={{width:10,height:10,borderRadius:2,background:c.color,flexShrink:0}}/>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8}}>
-                      <span style={{fontSize:11,fontWeight:500}}>{c.nombre}</span>
-                      {c.fragil&&<span style={{fontSize:8,padding:"1px 6px",borderRadius:10,background:"#f59e0b22",color:"#f59e0b",letterSpacing:1}}>FRÁGIL</span>}
-                    </div>
-                    <div style={{fontSize:9,color:"var(--muted)",marginTop:2}}>{c.id} · {c.largo}×{c.alto}×{c.ancho} m · {c.peso} kg</div>
+                    <div style={{fontSize:11,fontWeight:500}}>{c.nombre}</div>
+                    <div style={{fontSize:9,color:"var(--muted)",marginTop:2}}>{c.id} · {c.largo}×{c.alto}×{c.ancho} m · {c.peso} kg · ×{c.cantidad}</div>
                   </div>
                   <button onClick={()=>setCajas((p)=>p.filter((x)=>x.id!==c.id))}
                     style={{background:"transparent",border:"none",cursor:"pointer",color:"var(--muted)",fontSize:14,padding:"2px 6px",borderRadius:4}}
