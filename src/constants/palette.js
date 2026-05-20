@@ -1,14 +1,7 @@
 export const PALETTE = [
-  "#dad2f9",
-  "#c4aff4",
-  "#b68cef",
-  "#ae69eb",
-  "#ad46e6",
-  "#b223e1",
-  "#ac1ac3",
-  "#9c16a0",
-  "#7d1174",
-  "#5a0c4b",
+  "#e74c3c", "#3498db", "#2ecc71", "#f39c12",
+  "#9b59b6", "#1abc9c", "#e67e22", "#e91e63",
+  "#00bcd4", "#8bc34a",
 ];
 
 

@@ -1,11 +1,96 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Visor 3D necesita esto — no eliminar ── */
+body, html, #root { width: 100%; height: 100%; }
+
+/* ── CSS vars del dashboard ── */
+:root {
+  --bg:      #0a0c12;
+  --surface: #0f1219;
+  --border:  #161c2a;
+  --border2: #1e2740;
+  --blue:    #4a9eff;
+  --green:   #2ecc71;
+  --yellow:  #f59e0b;
+  --red:     #e74c3c;
+  --purple:  #e879f9;
+  --text:    #dde6f5;
+  --muted:   #4a5a7a;
+  --muted2:  #8a9ab5;
 }
 
-body, html, #root {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; }
+.syne { font-family: 'Syne', sans-serif; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── Dashboard sidebar ── */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+  background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 10;
 }
+
+/* ── Nav items ── */
+.ni {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: 8px; font-size: 11px; letter-spacing: 1px;
+  cursor: pointer; transition: all 0.15s; color: var(--muted); border: 1px solid transparent;
+}
+.ni:hover { color: var(--text); background: #141824; }
+.ni.on    { color: var(--blue); background: #0d1929; border-color: #1e3a6a; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+  border-radius: 8px; border: none; font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: all 0.15s;
+}
+.bp { background: var(--blue); color: #fff; box-shadow: 0 0 20px #4a9eff33; }
+.bp:hover { background: #5aaeff; transform: translateY(-1px); }
+.bg { background: transparent; color: var(--muted2); border: 1px solid var(--border2); }
+.bg:hover { color: var(--text); border-color: var(--muted); }
+
+/* ── Grid layouts ── */
+.sg  { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.g2  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.g31 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
+
+/* ── Cards ── */
+.sc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
+.sc:hover { border-color: var(--border2); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.ch { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.ct { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
+.cs { font-size: 9px; color: var(--muted); letter-spacing: 2px; margin-top: 2px; }
+
+/* ── Table ── */
+.tbl               { width: 100%; border-collapse: collapse; }
+.tbl th            { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-align: left; padding: 0 0 12px; border-bottom: 1px solid var(--border); }
+.tbl td            { font-size: 11px; padding: 12px 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td   { background: #0d1018; }
+
+/* ── Page header ── */
+.ph     { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+.ptitle { font-size: 22px; font-weight: 800; color: var(--text); }
+.psub   { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-top: 4px; }
+
+/* ── CO2 banner ── */
+.co2b { background: #0a1a10; border: 1px solid #1a4a2a; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.co2d { width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; box-shadow: 0 0 8px #2ecc71; flex-shrink: 0; animation: dotpulse 2s infinite; }
+
+/* ── Animations ── */
+@keyframes dotpulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 20px #4a9eff33; } 50% { box-shadow: 0 0 32px #4a9eff66; } }
+.pulse { animation: pulse 2s infinite; }
+
+/* ── Form inputs ── */
+input::placeholder { color: var(--muted); }
+select option      { background: #0f1219; }

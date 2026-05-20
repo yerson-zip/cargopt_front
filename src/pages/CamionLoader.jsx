@@ -6,10 +6,12 @@ import ErrorScreen    from "../components/ErrorScreen";
 import Navbar         from "../components/Navbar";
 import CanvasView     from "../components/CanvasView";
 import Sidebar        from "../components/Sidebar";
+import { useParams } from "react-router-dom";
 
 export default function CamionLoader() {
+  let params = useParams();
   const [cajaHover, setCajaHover] = useState(null);
-  const { camion, cajas, carga, loading, error } = useCargaData(11, 58);
+  const { camion, cajas, carga, loading, error } = useCargaData(params.id_camion, params.id_carga);
 
   if (loading) return <LoadingScreen />;
   if (error)   return <ErrorScreen message={error} />;
