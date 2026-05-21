@@ -114,8 +114,8 @@ export default function PageNuevaCarga({ camiones }) {
               <DashInp label="Ancho" value={fc.ancho} onChange={(v)=>setFc((p)=>({...p,ancho:v}))} type="number" placeholder="0.0" unit="m"/>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              <DashInp label="Peso"     value={fc.peso}     onChange={(v)=>setFc((p)=>({...p,peso:v}))}     type="number" placeholder="0"   unit="kg"/>
-              <DashInp label="Cantidad" value={fc.cantidad} onChange={(v)=>setFc((p)=>({...p,cantidad:v}))} type="number" placeholder="1"   unit="uds"/>
+              <DashInp label="Peso"     value={fc.peso}     onChange={(v)=>setFc((p)=>({...p,peso:v}))}     type="number" placeholder="0"  unit="kg"/>
+              <DashInp label="Cantidad" value={fc.cantidad} onChange={(v)=>setFc((p)=>({...p,cantidad:v}))} type="number" placeholder="1"  unit="uds"/>
             </div>
             {formErr&&<div style={{fontSize:10,color:"#e74c3c",padding:"8px 12px",background:"#2a080822",borderRadius:6,border:"1px solid #e74c3c44"}}>{formErr}</div>}
             <button className="btn bp" style={{alignSelf:"flex-start"}} onClick={addCaja}>+ Agregar caja</button>
@@ -126,7 +126,7 @@ export default function PageNuevaCarga({ camiones }) {
           <div className="card" style={{flex:1}}>
             <div className="ch">
               <div><div className="ct syne">Manifiesto</div><div className="cs">{cajas.length} CAJAS</div></div>
-              {cajas.length>0&&<div style={{fontSize:10,color:"var(--muted2)"}}>{cajas.reduce((s,c)=>s+c.peso,0)} kg</div>}
+              {cajas.length>0&&<div style={{fontSize:10,color:"var(--muted2)"}}>{cajas.reduce((s,c)=>s+(c.peso*c.cantidad),0)} kg</div>}
             </div>
             <div style={{padding:"0 20px",maxHeight:300,overflowY:"auto"}}>
               {cajas.length===0?(
@@ -151,7 +151,8 @@ export default function PageNuevaCarga({ camiones }) {
           </div>
 
           {cajas.length>0&&(()=>{
-            const pt=cajas.reduce((s,c)=>s+c.peso,0); const exc=pt>camSel.peso_max;
+            const pt  = cajas.reduce((s,c) => s + (c.peso * c.cantidad), 0);
+            const exc = pt > camSel.peso_max;
             return(
               <div style={{background:"#0a0c12",border:"1px solid var(--border2)",borderRadius:10,padding:14}}>
                 <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"var(--muted)",marginBottom:6}}>
